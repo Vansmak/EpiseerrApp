@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Episeerr</string>
+    <string name="settings_title">Settings</string>
+    <string name="server_url_hint">http://192.168.254.205:5002</string>
+</resources>
