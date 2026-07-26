@@ -1,6 +1,6 @@
 # Episeerr Android App
 
-Android TV / mobile client for [Episeerr](https://github.com/your-username/episeerr).
+Android TV / mobile client for [Episeerr](https://github.com/vansmak/episeerr). Optional companion app — Episeerr runs fully without it; this just gives you rule management, pending approvals, and service config from your phone or TV.
 
 ## Building
 

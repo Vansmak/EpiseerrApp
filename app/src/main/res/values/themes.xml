@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Only used for the pre-Compose cold-start window (splash frame) - matches the brand
+         background so there's no white/black flash before EpiseerrTheme takes over. -->
+    <style name="Theme.Episeerr" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+        <item name="android:statusBarColor">@color/window_background</item>
+        <item name="android:navigationBarColor">@color/window_background</item>
+    </style>
+</resources>

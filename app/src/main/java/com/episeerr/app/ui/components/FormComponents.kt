@@ -23,7 +23,12 @@ fun FormSpacer() {
 
 @Composable
 fun SectionLabel(text: String) {
-    Text(text, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(bottom = 4.dp))
+    Text(
+        text,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(bottom = 4.dp)
+    )
 }
 
 /** A two-option chip picker, e.g. episodes/all, monitor/search, series/season. */
