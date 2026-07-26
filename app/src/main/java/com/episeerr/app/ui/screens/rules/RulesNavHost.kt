@@ -15,6 +15,7 @@ private const val EDIT_ROUTE = "rules/edit/{ruleName}"
 private const val MOVIE_CREATE_ROUTE = "movie-rules/create"
 private const val MOVIE_EDIT_ROUTE = "movie-rules/edit/{ruleName}"
 private const val MOVIES_BROWSE_ROUTE = "movies/browse"
+private const val SERIES_BROWSE_ROUTE = "series/browse"
 
 @Composable
 fun RulesNavHost() {
@@ -27,11 +28,15 @@ fun RulesNavHost() {
                 onCreateRule = { navController.navigate(CREATE_ROUTE) },
                 onOpenMovieRule = { name -> navController.navigate("movie-rules/edit/$name") },
                 onCreateMovieRule = { navController.navigate(MOVIE_CREATE_ROUTE) },
-                onBrowseMovies = { navController.navigate(MOVIES_BROWSE_ROUTE) }
+                onBrowseMovies = { navController.navigate(MOVIES_BROWSE_ROUTE) },
+                onBrowseSeries = { navController.navigate(SERIES_BROWSE_ROUTE) }
             )
         }
         composable(MOVIES_BROWSE_ROUTE) {
             MoviesBrowserScreen(onBack = { navController.popBackStack() })
+        }
+        composable(SERIES_BROWSE_ROUTE) {
+            SeriesBrowserScreen(onBack = { navController.popBackStack() })
         }
         composable(CREATE_ROUTE) {
             RuleEditScreen(onBack = { navController.popBackStack() })

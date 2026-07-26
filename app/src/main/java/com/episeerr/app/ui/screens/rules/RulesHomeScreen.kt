@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,7 +51,8 @@ fun RulesHomeScreen(
     onCreateRule: () -> Unit,
     onOpenMovieRule: (String) -> Unit,
     onCreateMovieRule: () -> Unit,
-    onBrowseMovies: () -> Unit
+    onBrowseMovies: () -> Unit,
+    onBrowseSeries: () -> Unit
 ) {
     var tab by remember { mutableIntStateOf(0) }
     val episodeState by episodeViewModel.uiState.collectAsState()
@@ -61,7 +63,11 @@ fun RulesHomeScreen(
             TopAppBar(
                 title = { Text("Rules") },
                 actions = {
-                    if (tab == 1) {
+                    if (tab == 0) {
+                        IconButton(onClick = onBrowseSeries) {
+                            Icon(Icons.Filled.Tv, contentDescription = "Browse series")
+                        }
+                    } else {
                         IconButton(onClick = onBrowseMovies) {
                             Icon(Icons.Filled.Movie, contentDescription = "Browse movies")
                         }

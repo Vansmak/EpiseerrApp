@@ -2,10 +2,13 @@ package com.episeerr.app.data.api
 
 import com.episeerr.app.data.model.AssignMovieRuleRequest
 import com.episeerr.app.data.model.AssignMovieRuleResponse
+import com.episeerr.app.data.model.AssignSeriesRuleRequest
+import com.episeerr.app.data.model.AssignSeriesRuleResponse
 import com.episeerr.app.data.model.DashboardActivityResponse
 import com.episeerr.app.data.model.DashboardStatsResponse
 import com.episeerr.app.data.model.DeleteResponse
 import com.episeerr.app.data.model.RadarrMoviesResponse
+import com.episeerr.app.data.model.SeriesListResponse
 import com.episeerr.app.data.model.GlobalSettings
 import com.episeerr.app.data.model.GlobalSettingsResponse
 import com.episeerr.app.data.model.MovieRuleRequest
@@ -71,6 +74,12 @@ interface EpiseerrApi {
 
     @DELETE("/api/movie-rules/{name}")
     suspend fun deleteMovieRule(@Path("name") name: String): DeleteResponse
+
+    @GET("/api/series-list")
+    suspend fun getSeriesList(): SeriesListResponse
+
+    @POST("/api/rules/assign")
+    suspend fun assignSeriesRule(@Body body: AssignSeriesRuleRequest): AssignSeriesRuleResponse
 
     @GET("/api/radarr/movies")
     suspend fun getRadarrMovies(): RadarrMoviesResponse
