@@ -2,6 +2,7 @@ package com.episeerr.app.ui.screens.movierules
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,8 +14,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -50,17 +55,50 @@ fun MoviesBrowserScreen(
     val uiState by viewModel.uiState.collectAsState()
     val rulesState by movieRulesViewModel.uiState.collectAsState()
     var pickerMovie by remember { mutableStateOf<RadarrMovie?>(null) }
+    var showBulkPicker by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(uiState.filterRuleName?.let { "Movies in \"$it\"" } ?: "Movies") },
+                title = {
+                    Text(
+                        if (uiState.selectMode) "${uiState.selectedIds.size} selected"
+                        else uiState.filterRuleName?.let { "Movies in \"$it\"" } ?: "Movies"
+                    )
+                },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                    IconButton(onClick = if (uiState.selectMode) viewModel::toggleSelectMode else onBack) {
+                        Icon(
+                            if (uiState.selectMode) Icons.Filled.Close else Icons.Filled.ArrowBack,
+                            contentDescription = if (uiState.selectMode) "Cancel selection" else "Back"
+                        )
+                    }
+                },
+                actions = {
+                    if (!uiState.selectMode) {
+                        IconButton(onClick = viewModel::toggleSelectMode) {
+                            Icon(Icons.Filled.Checklist, contentDescription = "Select multiple")
+                        }
                     }
                 }
             )
+        },
+        bottomBar = {
+            if (uiState.selectMode && uiState.selectedIds.isNotEmpty()) {
+                BottomAppBar {
+                    Button(
+                        onClick = { showBulkPicker = true },
+                        enabled = !uiState.isBulkAssigning,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                    ) {
+                        if (uiState.isBulkAssigning) {
+                            CircularProgressIndicator(modifier = Modifier.padding(4.dp))
+                        } else {
+                            Text("Assign ${uiState.selectedIds.size} to a rule")
+                        }
+                    }
+                }
+            }
         }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
@@ -113,13 +151,23 @@ fun MoviesBrowserScreen(
                         contentPadding = PaddingValues(16.dp, 0.dp, 16.dp, 16.dp)
                     ) {
                         items(filtered) { movie ->
+                            val selected = movie.id in uiState.selectedIds
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 8.dp)
-                                    .clickable { pickerMovie = movie }
+                                    .clickable {
+                                        if (uiState.selectMode) {
+                                            viewModel.toggleSelected(movie.id)
+                                        } else {
+                                            pickerMovie = movie
+                                        }
+                                    }
                             ) {
                                 Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    if (uiState.selectMode) {
+                                        Checkbox(checked = selected, onCheckedChange = { viewModel.toggleSelected(movie.id) })
+                                    }
                                     AsyncImage(
                                         model = movie.poster,
                                         contentDescription = movie.title,
@@ -165,6 +213,29 @@ fun MoviesBrowserScreen(
             },
             confirmButton = {},
             dismissButton = { TextButton(onClick = { pickerMovie = null }) { Text("Cancel") } }
+        )
+    }
+
+    if (showBulkPicker) {
+        AlertDialog(
+            onDismissRequest = { showBulkPicker = false },
+            title = { Text("Assign ${uiState.selectedIds.size} movies to a rule") },
+            text = {
+                Column {
+                    TextButton(onClick = {
+                        viewModel.assignSelected("")
+                        showBulkPicker = false
+                    }) { Text("Unassigned") }
+                    rulesState.rules.forEach { rule ->
+                        TextButton(onClick = {
+                            viewModel.assignSelected(rule.name)
+                            showBulkPicker = false
+                        }) { Text(rule.displayName ?: rule.name) }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = { TextButton(onClick = { showBulkPicker = false }) { Text("Cancel") } }
         )
     }
 }

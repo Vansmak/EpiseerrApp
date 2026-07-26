@@ -7,6 +7,9 @@ import com.episeerr.app.data.ApiResult
 import com.episeerr.app.data.EpiseerrRepository
 import com.episeerr.app.data.model.RadarrMovie
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +23,10 @@ data class MoviesBrowserUiState(
     val error: String? = null,
     val assigningMovieId: Int? = null,
     val filterRuleName: String? = null,
-    val showAllMovies: Boolean = false
+    val showAllMovies: Boolean = false,
+    val selectMode: Boolean = false,
+    val selectedIds: Set<Int> = emptySet(),
+    val isBulkAssigning: Boolean = false
 )
 
 @HiltViewModel
@@ -61,6 +67,20 @@ class MoviesBrowserViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(showAllMovies = showAll)
     }
 
+    fun toggleSelectMode() {
+        _uiState.value = _uiState.value.copy(
+            selectMode = !_uiState.value.selectMode,
+            selectedIds = emptySet()
+        )
+    }
+
+    fun toggleSelected(movieId: Int) {
+        val current = _uiState.value.selectedIds
+        _uiState.value = _uiState.value.copy(
+            selectedIds = if (movieId in current) current - movieId else current + movieId
+        )
+    }
+
     fun assign(movieId: Int, ruleName: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(assigningMovieId = movieId)
@@ -76,6 +96,30 @@ class MoviesBrowserViewModel @Inject constructor(
                     error = result.message
                 )
             }
+        }
+    }
+
+    fun assignSelected(ruleName: String) {
+        val ids = _uiState.value.selectedIds
+        if (ids.isEmpty()) return
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isBulkAssigning = true)
+            coroutineScope {
+                ids.map { id -> async { id to repository.assignMovieRule(id, ruleName) } }.awaitAll()
+            }.forEach { (id, result) ->
+                if (result is ApiResult.Success) {
+                    _uiState.value = _uiState.value.copy(
+                        movies = _uiState.value.movies.map {
+                            if (it.id == id) it.copy(assignedRule = result.data.assignedRule) else it
+                        }
+                    )
+                }
+            }
+            _uiState.value = _uiState.value.copy(
+                isBulkAssigning = false,
+                selectMode = false,
+                selectedIds = emptySet()
+            )
         }
     }
 }
