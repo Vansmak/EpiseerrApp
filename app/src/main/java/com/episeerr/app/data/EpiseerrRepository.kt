@@ -8,6 +8,7 @@ import com.episeerr.app.data.model.AssignSeriesRuleResponse
 import com.episeerr.app.data.model.DashboardActivityResponse
 import com.episeerr.app.data.model.DashboardStatsResponse
 import com.episeerr.app.data.model.DeleteResponse
+import com.episeerr.app.data.model.LogsResponse
 import com.episeerr.app.data.model.RadarrMoviesResponse
 import com.episeerr.app.data.model.SeriesListResponse
 import com.episeerr.app.data.model.GlobalSettings
@@ -82,6 +83,9 @@ class EpiseerrRepository @Inject constructor(
 
     suspend fun testConnection(service: String, fields: JsonObject): ApiResult<SaveServiceResponse> =
         apiCall { api.testConnection(service, fields) }
+
+    suspend fun getLogs(logFile: String, lines: Int, level: String, search: String): ApiResult<LogsResponse> =
+        apiCall { api.getLogs(logFile, lines, level, search) }
 
     suspend fun getGlobalSettings(): ApiResult<GlobalSettingsResponse> = apiCall { api.getGlobalSettings() }
 

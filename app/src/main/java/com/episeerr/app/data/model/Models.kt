@@ -301,6 +301,19 @@ data class SaveServiceResponse(
     val message: String = ""
 )
 
+// --- Logs ---
+
+@Serializable
+data class LogsResponse(
+    val success: Boolean = false,
+    @SerialName("log_file") val logFile: String = "",
+    @SerialName("log_lines") val logLines: List<String> = emptyList(),
+    @SerialName("total_lines") val totalLines: Int = 0,
+    @SerialName("log_size") val logSize: String = "",
+    @SerialName("available_logs") val availableLogs: List<String> = emptyList(),
+    val error: String? = null
+)
+
 @Serializable
 data class ToggleServiceRequest(val enabled: Boolean)
 

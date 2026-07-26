@@ -21,7 +21,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.episeerr.app.ui.screens.overview.OverviewNavHost
 import com.episeerr.app.ui.screens.rules.RulesNavHost
-import com.episeerr.app.ui.screens.settings.GlobalSettingsScreen
+import com.episeerr.app.ui.screens.settings.SettingsNavHost
 
 private sealed class MainTab(val route: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     object Overview : MainTab("main/overview", "Overview", Icons.Filled.Dashboard)
@@ -67,7 +67,7 @@ fun MainScaffold() {
         ) {
             composable(MainTab.Overview.route) { OverviewNavHost() }
             composable(MainTab.Rules.route) { RulesNavHost() }
-            composable(MainTab.Settings.route) { GlobalSettingsScreen() }
+            composable(MainTab.Settings.route) { SettingsNavHost() }
         }
     }
 }

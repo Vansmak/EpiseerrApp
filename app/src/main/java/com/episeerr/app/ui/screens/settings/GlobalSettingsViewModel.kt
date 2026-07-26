@@ -22,6 +22,7 @@ data class GlobalSettingsUiState(
     val autoAssignNewSeries: Boolean = false,
     val notificationsEnabled: Boolean = false,
     val discordWebhookUrl: String = "",
+    val notifyAiredNotDownloaded: Boolean = false,
     val automationHeld: Boolean = false,
     val reconcileEnabled: Boolean = false,
     val error: String? = null,
@@ -55,6 +56,7 @@ class GlobalSettingsViewModel @Inject constructor(
                         autoAssignNewSeries = settings?.autoAssignNewSeries ?: false,
                         notificationsEnabled = settings?.notificationsEnabled ?: false,
                         discordWebhookUrl = settings?.discordWebhookUrl ?: "",
+                        notifyAiredNotDownloaded = settings?.notifyAiredNotDownloaded ?: false,
                         automationHeld = settings?.automationHeld ?: false,
                         reconcileEnabled = settings?.reconcileEnabled ?: false
                     )
@@ -77,6 +79,7 @@ class GlobalSettingsViewModel @Inject constructor(
             autoAssignNewSeries = state.autoAssignNewSeries,
             notificationsEnabled = state.notificationsEnabled,
             discordWebhookUrl = state.discordWebhookUrl,
+            notifyAiredNotDownloaded = state.notifyAiredNotDownloaded,
             automationHeld = state.automationHeld,
             reconcileEnabled = state.reconcileEnabled
         )

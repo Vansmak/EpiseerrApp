@@ -7,6 +7,7 @@ import com.episeerr.app.data.model.AssignSeriesRuleResponse
 import com.episeerr.app.data.model.DashboardActivityResponse
 import com.episeerr.app.data.model.DashboardStatsResponse
 import com.episeerr.app.data.model.DeleteResponse
+import com.episeerr.app.data.model.LogsResponse
 import com.episeerr.app.data.model.RadarrMoviesResponse
 import com.episeerr.app.data.model.SeriesListResponse
 import com.episeerr.app.data.model.GlobalSettings
@@ -31,6 +32,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface EpiseerrApi {
 
@@ -100,6 +102,14 @@ interface EpiseerrApi {
 
     @POST("/api/test-connection/{service}")
     suspend fun testConnection(@Path("service") service: String, @Body body: JsonObject): SaveServiceResponse
+
+    @GET("/api/logs")
+    suspend fun getLogs(
+        @Query("log_file") logFile: String,
+        @Query("lines") lines: Int,
+        @Query("level") level: String,
+        @Query("search") search: String
+    ): LogsResponse
 
     @GET("/api/global-settings")
     suspend fun getGlobalSettings(): GlobalSettingsResponse

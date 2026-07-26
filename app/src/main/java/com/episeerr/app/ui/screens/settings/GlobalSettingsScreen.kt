@@ -12,6 +12,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -29,7 +30,10 @@ import com.episeerr.app.ui.components.SwitchRow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GlobalSettingsScreen(viewModel: GlobalSettingsViewModel = hiltViewModel()) {
+fun GlobalSettingsScreen(
+    viewModel: GlobalSettingsViewModel = hiltViewModel(),
+    onOpenLogs: () -> Unit
+) {
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(topBar = { TopAppBar(title = { Text("Settings") }) }) { padding ->
@@ -78,6 +82,16 @@ fun GlobalSettingsScreen(viewModel: GlobalSettingsViewModel = hiltViewModel()) {
             SwitchRow("Notifications enabled", uiState.notificationsEnabled) {
                 viewModel.update { copy(notificationsEnabled = it) }
             }
+            SwitchRow("Notify when aired but not downloaded", uiState.notifyAiredNotDownloaded) {
+                viewModel.update { copy(notifyAiredNotDownloaded = it) }
+            }
+            OutlinedTextField(
+                value = uiState.discordWebhookUrl,
+                onValueChange = { viewModel.update { copy(discordWebhookUrl = it) } },
+                label = { Text("Discord webhook URL") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+            )
 
             uiState.error?.let {
                 FormSpacer()
@@ -99,6 +113,11 @@ fun GlobalSettingsScreen(viewModel: GlobalSettingsViewModel = hiltViewModel()) {
                 } else {
                     Text("Save")
                 }
+            }
+
+            FormSpacer()
+            OutlinedButton(onClick = onOpenLogs, modifier = Modifier.fillMaxWidth()) {
+                Text("View Logs")
             }
 
             FormSpacer()
