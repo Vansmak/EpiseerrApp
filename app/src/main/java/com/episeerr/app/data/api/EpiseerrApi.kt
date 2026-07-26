@@ -6,10 +6,18 @@ import com.episeerr.app.data.model.AssignSeriesRuleRequest
 import com.episeerr.app.data.model.AssignSeriesRuleResponse
 import com.episeerr.app.data.model.DashboardActivityResponse
 import com.episeerr.app.data.model.DashboardStatsResponse
+import com.episeerr.app.data.model.ApproveResult
 import com.episeerr.app.data.model.DeleteResponse
+import com.episeerr.app.data.model.EpisodeIdsRequest
 import com.episeerr.app.data.model.LogsResponse
+import com.episeerr.app.data.model.MovieIdsRequest
+import com.episeerr.app.data.model.PendingDeletionsResponse
+import com.episeerr.app.data.model.PendingWatchEventsResponse
+import com.episeerr.app.data.model.ProcessWatchEventResult
 import com.episeerr.app.data.model.RadarrMoviesResponse
+import com.episeerr.app.data.model.RejectResult
 import com.episeerr.app.data.model.SeriesListResponse
+import com.episeerr.app.data.model.SimpleSuccessResponse
 import com.episeerr.app.data.model.GlobalSettings
 import com.episeerr.app.data.model.GlobalSettingsResponse
 import com.episeerr.app.data.model.MovieRuleRequest
@@ -116,4 +124,31 @@ interface EpiseerrApi {
 
     @POST("/api/global-settings")
     suspend fun updateGlobalSettings(@Body body: GlobalSettings): GlobalSettingsResponse
+
+    @GET("/api/pending-deletions")
+    suspend fun getPendingDeletions(): PendingDeletionsResponse
+
+    @POST("/pending-deletions/approve")
+    suspend fun approveEpisodeDeletions(@Body body: EpisodeIdsRequest): ApproveResult
+
+    @POST("/pending-deletions/reject")
+    suspend fun rejectEpisodeDeletions(@Body body: EpisodeIdsRequest): RejectResult
+
+    @POST("/pending-deletions/movies/approve")
+    suspend fun approveMovieDeletions(@Body body: MovieIdsRequest): ApproveResult
+
+    @POST("/pending-deletions/movies/reject")
+    suspend fun rejectMovieDeletions(@Body body: MovieIdsRequest): RejectResult
+
+    @GET("/api/pending-watch-events")
+    suspend fun getPendingWatchEvents(): PendingWatchEventsResponse
+
+    @POST("/api/pending-watch-events/{itemId}/process")
+    suspend fun processPendingWatchEvent(@Path("itemId") itemId: String): ProcessWatchEventResult
+
+    @POST("/api/pending-watch-events/{itemId}/clear")
+    suspend fun clearPendingWatchEvent(@Path("itemId") itemId: String): SimpleSuccessResponse
+
+    @POST("/api/pending-watch-events/clear-all")
+    suspend fun clearAllPendingWatchEvents(): SimpleSuccessResponse
 }

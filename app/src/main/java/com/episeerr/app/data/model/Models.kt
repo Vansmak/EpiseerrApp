@@ -301,6 +301,119 @@ data class SaveServiceResponse(
     val message: String = ""
 )
 
+// --- Pending deletions ---
+
+@Serializable
+data class PendingDeletionsResponse(
+    val success: Boolean = false,
+    val episodes: PendingEpisodesSummary = PendingEpisodesSummary(),
+    val movies: PendingMoviesSummary = PendingMoviesSummary(),
+    val error: String? = null
+)
+
+@Serializable
+data class PendingEpisodesSummary(
+    @SerialName("total_series") val totalSeries: Int = 0,
+    @SerialName("total_episodes") val totalEpisodes: Int = 0,
+    @SerialName("total_size_gb") val totalSizeGb: Double = 0.0,
+    val series: List<PendingSeriesGroup> = emptyList()
+)
+
+@Serializable
+data class PendingSeriesGroup(
+    @SerialName("series_id") val seriesId: Int,
+    @SerialName("series_title") val seriesTitle: String,
+    val seasons: List<PendingSeasonGroup> = emptyList()
+)
+
+@Serializable
+data class PendingSeasonGroup(
+    @SerialName("season_number") val seasonNumber: Int,
+    val episodes: List<PendingEpisode> = emptyList()
+)
+
+@Serializable
+data class PendingEpisode(
+    @SerialName("episode_id") val episodeId: Int,
+    @SerialName("episode_number") val episodeNumber: Int,
+    val title: String = "",
+    val reason: String = "",
+    @SerialName("rule_name") val ruleName: String = "",
+    @SerialName("file_size_mb") val fileSizeMb: Double = 0.0,
+    @SerialName("queued_at") val queuedAt: String = ""
+)
+
+@Serializable
+data class PendingMoviesSummary(
+    @SerialName("total_movies") val totalMovies: Int = 0,
+    @SerialName("total_size_gb") val totalSizeGb: Double = 0.0,
+    val movies: List<PendingMovie> = emptyList()
+)
+
+@Serializable
+data class PendingMovie(
+    @SerialName("movie_id") val movieId: Int,
+    @SerialName("movie_title") val movieTitle: String = "",
+    @SerialName("file_size_mb") val fileSizeMb: Double = 0.0,
+    @SerialName("rule_name") val ruleName: String = "",
+    val reason: String = "",
+    @SerialName("queued_at") val queuedAt: String = ""
+)
+
+@Serializable
+data class EpisodeIdsRequest(@SerialName("episode_ids") val episodeIds: List<Int>)
+
+@Serializable
+data class MovieIdsRequest(@SerialName("movie_ids") val movieIds: List<Int>)
+
+@Serializable
+data class ApproveResult(
+    val success: Boolean = false,
+    @SerialName("deleted_count") val deletedCount: Int = 0,
+    val errors: List<String> = emptyList(),
+    val error: String? = null
+)
+
+@Serializable
+data class RejectResult(
+    val success: Boolean = false,
+    @SerialName("rejected_count") val rejectedCount: Int = 0,
+    val error: String? = null
+)
+
+@Serializable
+data class SimpleSuccessResponse(val success: Boolean = false, val error: String? = null)
+
+// --- Pending watch events ---
+
+@Serializable
+data class PendingWatchEventsResponse(
+    val success: Boolean = false,
+    val count: Int = 0,
+    val items: List<PendingWatchEventItem> = emptyList(),
+    @SerialName("last_checked") val lastChecked: String? = null,
+    val error: String? = null
+)
+
+@Serializable
+data class PendingWatchEventItem(
+    val id: String,
+    @SerialName("series_id") val seriesId: Int,
+    @SerialName("series_title") val seriesTitle: String = "",
+    val season: Int,
+    val episode: Int,
+    val source: String = "",
+    val user: String = ""
+)
+
+@Serializable
+data class ProcessWatchEventResult(
+    val success: Boolean = false,
+    val processed: Boolean = false,
+    val message: String? = null,
+    val error: String? = null
+)
+
 // --- Logs ---
 
 @Serializable

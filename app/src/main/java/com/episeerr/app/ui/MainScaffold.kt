@@ -3,6 +3,7 @@ package com.episeerr.app.ui
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -20,16 +21,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.episeerr.app.ui.screens.overview.OverviewNavHost
+import com.episeerr.app.ui.screens.pending.PendingScreen
 import com.episeerr.app.ui.screens.rules.RulesNavHost
 import com.episeerr.app.ui.screens.settings.SettingsNavHost
 
 private sealed class MainTab(val route: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     object Overview : MainTab("main/overview", "Overview", Icons.Filled.Dashboard)
     object Rules : MainTab("main/rules", "Rules", Icons.Filled.List)
+    object Pending : MainTab("main/pending", "Pending", Icons.Filled.HourglassEmpty)
     object Settings : MainTab("main/settings", "Settings", Icons.Filled.Settings)
 }
 
-private val mainTabs = listOf(MainTab.Overview, MainTab.Rules, MainTab.Settings)
+private val mainTabs = listOf(MainTab.Overview, MainTab.Rules, MainTab.Pending, MainTab.Settings)
 
 @Composable
 fun MainScaffold() {
@@ -67,6 +70,7 @@ fun MainScaffold() {
         ) {
             composable(MainTab.Overview.route) { OverviewNavHost() }
             composable(MainTab.Rules.route) { RulesNavHost() }
+            composable(MainTab.Pending.route) { PendingScreen() }
             composable(MainTab.Settings.route) { SettingsNavHost() }
         }
     }

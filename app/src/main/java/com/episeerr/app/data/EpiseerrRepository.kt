@@ -1,6 +1,7 @@
 package com.episeerr.app.data
 
 import com.episeerr.app.data.api.EpiseerrApi
+import com.episeerr.app.data.model.ApproveResult
 import com.episeerr.app.data.model.AssignMovieRuleRequest
 import com.episeerr.app.data.model.AssignMovieRuleResponse
 import com.episeerr.app.data.model.AssignSeriesRuleRequest
@@ -8,9 +9,16 @@ import com.episeerr.app.data.model.AssignSeriesRuleResponse
 import com.episeerr.app.data.model.DashboardActivityResponse
 import com.episeerr.app.data.model.DashboardStatsResponse
 import com.episeerr.app.data.model.DeleteResponse
+import com.episeerr.app.data.model.EpisodeIdsRequest
 import com.episeerr.app.data.model.LogsResponse
+import com.episeerr.app.data.model.MovieIdsRequest
+import com.episeerr.app.data.model.PendingDeletionsResponse
+import com.episeerr.app.data.model.PendingWatchEventsResponse
+import com.episeerr.app.data.model.ProcessWatchEventResult
 import com.episeerr.app.data.model.RadarrMoviesResponse
+import com.episeerr.app.data.model.RejectResult
 import com.episeerr.app.data.model.SeriesListResponse
+import com.episeerr.app.data.model.SimpleSuccessResponse
 import com.episeerr.app.data.model.GlobalSettings
 import com.episeerr.app.data.model.GlobalSettingsResponse
 import com.episeerr.app.data.model.MovieRuleRequest
@@ -91,4 +99,31 @@ class EpiseerrRepository @Inject constructor(
 
     suspend fun updateGlobalSettings(settings: GlobalSettings): ApiResult<GlobalSettingsResponse> =
         apiCall { api.updateGlobalSettings(settings) }
+
+    suspend fun getPendingDeletions(): ApiResult<PendingDeletionsResponse> =
+        apiCall { api.getPendingDeletions() }
+
+    suspend fun approveEpisodeDeletions(episodeIds: List<Int>): ApiResult<ApproveResult> =
+        apiCall { api.approveEpisodeDeletions(EpisodeIdsRequest(episodeIds)) }
+
+    suspend fun rejectEpisodeDeletions(episodeIds: List<Int>): ApiResult<RejectResult> =
+        apiCall { api.rejectEpisodeDeletions(EpisodeIdsRequest(episodeIds)) }
+
+    suspend fun approveMovieDeletions(movieIds: List<Int>): ApiResult<ApproveResult> =
+        apiCall { api.approveMovieDeletions(MovieIdsRequest(movieIds)) }
+
+    suspend fun rejectMovieDeletions(movieIds: List<Int>): ApiResult<RejectResult> =
+        apiCall { api.rejectMovieDeletions(MovieIdsRequest(movieIds)) }
+
+    suspend fun getPendingWatchEvents(): ApiResult<PendingWatchEventsResponse> =
+        apiCall { api.getPendingWatchEvents() }
+
+    suspend fun processPendingWatchEvent(itemId: String): ApiResult<ProcessWatchEventResult> =
+        apiCall { api.processPendingWatchEvent(itemId) }
+
+    suspend fun clearPendingWatchEvent(itemId: String): ApiResult<SimpleSuccessResponse> =
+        apiCall { api.clearPendingWatchEvent(itemId) }
+
+    suspend fun clearAllPendingWatchEvents(): ApiResult<SimpleSuccessResponse> =
+        apiCall { api.clearAllPendingWatchEvents() }
 }
