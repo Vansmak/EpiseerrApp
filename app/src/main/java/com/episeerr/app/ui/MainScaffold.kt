@@ -21,8 +21,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.episeerr.app.ui.screens.dashboard.DashboardScreen
-import com.episeerr.app.ui.screens.placeholder.ComingSoonScreen
 import com.episeerr.app.ui.screens.rules.RulesNavHost
+import com.episeerr.app.ui.screens.services.ServicesScreen
+import com.episeerr.app.ui.screens.settings.GlobalSettingsScreen
 
 private sealed class MainTab(val route: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     object Dashboard : MainTab("main/dashboard", "Dashboard", Icons.Filled.Dashboard)
@@ -69,8 +70,8 @@ fun MainScaffold() {
         ) {
             composable(MainTab.Dashboard.route) { DashboardScreen() }
             composable(MainTab.Rules.route) { RulesNavHost() }
-            composable(MainTab.Services.route) { ComingSoonScreen("Services") }
-            composable(MainTab.Settings.route) { ComingSoonScreen("Settings") }
+            composable(MainTab.Services.route) { ServicesScreen() }
+            composable(MainTab.Settings.route) { GlobalSettingsScreen() }
         }
     }
 }
