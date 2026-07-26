@@ -1,9 +1,12 @@
 package com.episeerr.app.data
 
 import com.episeerr.app.data.api.EpiseerrApi
+import com.episeerr.app.data.model.AssignMovieRuleRequest
+import com.episeerr.app.data.model.AssignMovieRuleResponse
 import com.episeerr.app.data.model.DashboardActivityResponse
 import com.episeerr.app.data.model.DashboardStatsResponse
 import com.episeerr.app.data.model.DeleteResponse
+import com.episeerr.app.data.model.RadarrMoviesResponse
 import com.episeerr.app.data.model.GlobalSettings
 import com.episeerr.app.data.model.GlobalSettingsResponse
 import com.episeerr.app.data.model.MovieRuleRequest
@@ -53,6 +56,11 @@ class EpiseerrRepository @Inject constructor(
         apiCall { api.updateMovieRule(name, body) }
 
     suspend fun deleteMovieRule(name: String): ApiResult<DeleteResponse> = apiCall { api.deleteMovieRule(name) }
+
+    suspend fun getRadarrMovies(): ApiResult<RadarrMoviesResponse> = apiCall { api.getRadarrMovies() }
+
+    suspend fun assignMovieRule(movieId: Int, ruleName: String): ApiResult<AssignMovieRuleResponse> =
+        apiCall { api.assignMovieRule(AssignMovieRuleRequest(movieId, ruleName)) }
 
     suspend fun getSetupSchema(): ApiResult<SetupSchemaResponse> = apiCall { api.getSetupSchema() }
 

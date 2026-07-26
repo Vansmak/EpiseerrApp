@@ -1,8 +1,11 @@
 package com.episeerr.app.data.api
 
+import com.episeerr.app.data.model.AssignMovieRuleRequest
+import com.episeerr.app.data.model.AssignMovieRuleResponse
 import com.episeerr.app.data.model.DashboardActivityResponse
 import com.episeerr.app.data.model.DashboardStatsResponse
 import com.episeerr.app.data.model.DeleteResponse
+import com.episeerr.app.data.model.RadarrMoviesResponse
 import com.episeerr.app.data.model.GlobalSettings
 import com.episeerr.app.data.model.GlobalSettingsResponse
 import com.episeerr.app.data.model.MovieRuleRequest
@@ -68,6 +71,12 @@ interface EpiseerrApi {
 
     @DELETE("/api/movie-rules/{name}")
     suspend fun deleteMovieRule(@Path("name") name: String): DeleteResponse
+
+    @GET("/api/radarr/movies")
+    suspend fun getRadarrMovies(): RadarrMoviesResponse
+
+    @POST("/api/movie-rules/assign")
+    suspend fun assignMovieRule(@Body body: AssignMovieRuleRequest): AssignMovieRuleResponse
 
     @GET("/api/setup-schema")
     suspend fun getSetupSchema(): SetupSchemaResponse

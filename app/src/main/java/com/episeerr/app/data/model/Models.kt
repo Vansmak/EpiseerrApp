@@ -151,6 +151,39 @@ data class MovieRuleRequest(
     @SerialName("set_as_default") val setAsDefault: Boolean = false
 )
 
+// --- Radarr movie browser ---
+
+@Serializable
+data class RadarrMoviesResponse(
+    val success: Boolean = false,
+    val movies: List<RadarrMovie> = emptyList(),
+    val error: String? = null
+)
+
+@Serializable
+data class RadarrMovie(
+    val id: Int,
+    val title: String = "",
+    val year: Int? = null,
+    @SerialName("hasFile") val hasFile: Boolean = false,
+    val monitored: Boolean = false,
+    val poster: String? = null,
+    @SerialName("assigned_rule") val assignedRule: String? = null
+)
+
+@Serializable
+data class AssignMovieRuleRequest(
+    @SerialName("movie_id") val movieId: Int,
+    @SerialName("rule_name") val ruleName: String
+)
+
+@Serializable
+data class AssignMovieRuleResponse(
+    val success: Boolean = false,
+    @SerialName("assigned_rule") val assignedRule: String? = null,
+    val error: String? = null
+)
+
 @Serializable
 data class DeleteResponse(
     val success: Boolean = false,

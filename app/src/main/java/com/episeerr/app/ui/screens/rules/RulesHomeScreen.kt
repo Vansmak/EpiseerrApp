@@ -12,12 +12,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -47,14 +49,26 @@ fun RulesHomeScreen(
     onOpenRule: (String) -> Unit,
     onCreateRule: () -> Unit,
     onOpenMovieRule: (String) -> Unit,
-    onCreateMovieRule: () -> Unit
+    onCreateMovieRule: () -> Unit,
+    onBrowseMovies: () -> Unit
 ) {
     var tab by remember { mutableIntStateOf(0) }
     val episodeState by episodeViewModel.uiState.collectAsState()
     val movieState by movieViewModel.uiState.collectAsState()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Rules") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Rules") },
+                actions = {
+                    if (tab == 1) {
+                        IconButton(onClick = onBrowseMovies) {
+                            Icon(Icons.Filled.Movie, contentDescription = "Browse movies")
+                        }
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = { if (tab == 0) onCreateRule() else onCreateMovieRule() }) {
                 Icon(Icons.Filled.Add, contentDescription = "Create rule")
