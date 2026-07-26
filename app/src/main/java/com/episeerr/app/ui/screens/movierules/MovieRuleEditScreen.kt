@@ -1,4 +1,4 @@
-package com.episeerr.app.ui.screens.rules
+package com.episeerr.app.ui.screens.movierules
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,14 +35,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.episeerr.app.ui.components.FormSpacer
 import com.episeerr.app.ui.components.NumberField
-import com.episeerr.app.ui.components.SectionLabel
 import com.episeerr.app.ui.components.SwitchRow
 import com.episeerr.app.ui.components.TwoChoiceRow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RuleEditScreen(
-    viewModel: RuleEditViewModel = hiltViewModel(),
+fun MovieRuleEditScreen(
+    viewModel: MovieRuleEditViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -55,7 +54,7 @@ fun RuleEditScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (uiState.isEditMode) "Edit Rule" else "New Rule") },
+                title = { Text(if (uiState.isEditMode) "Edit Movie Rule" else "New Movie Rule") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
@@ -106,78 +105,24 @@ fun RuleEditScreen(
             )
             FormSpacer()
 
-            SectionLabel("Get episodes")
-            TwoChoiceRow(
-                selected = uiState.getType,
-                options = "episodes" to "Episodes" to ("all" to "All"),
-                onSelect = { viewModel.update { copy(getType = it) } }
-            )
-            if (uiState.getType == "episodes") {
-                NumberField("Get count", uiState.getCount) { viewModel.update { copy(getCount = it) } }
-            }
-            FormSpacer()
-
-            SectionLabel("Keep episodes")
-            TwoChoiceRow(
-                selected = uiState.keepType,
-                options = "episodes" to "Episodes" to ("all" to "All"),
-                onSelect = { viewModel.update { copy(keepType = it) } }
-            )
-            if (uiState.keepType == "episodes") {
-                NumberField("Keep count", uiState.keepCount) { viewModel.update { copy(keepCount = it) } }
-            }
-            FormSpacer()
-
-            SectionLabel("Action on new episodes")
-            TwoChoiceRow(
-                selected = uiState.actionOption,
-                options = "monitor" to "Monitor" to ("search" to "Search"),
-                onSelect = { viewModel.update { copy(actionOption = it) } }
-            )
-            FormSpacer()
-
-            SwitchRow("Keep monitored if watched", uiState.monitorWatched) {
-                viewModel.update { copy(monitorWatched = it) }
-            }
             NumberField("Grace period - watched (days)", uiState.graceWatched, optional = true) {
                 viewModel.update { copy(graceWatched = it) }
-            }
-            NumberField("Grace period - unwatched (days)", uiState.graceUnwatched, optional = true) {
-                viewModel.update { copy(graceUnwatched = it) }
             }
             NumberField("Dormant days", uiState.dormantDays, optional = true) {
                 viewModel.update { copy(dormantDays = it) }
             }
             FormSpacer()
 
-            SectionLabel("Grace scope")
             TwoChoiceRow(
-                selected = uiState.graceScope,
-                options = "series" to "Series" to ("season" to "Season"),
-                onSelect = { viewModel.update { copy(graceScope = it) } }
+                selected = uiState.deleteOption,
+                options = "file_only" to "File only" to ("remove_from_radarr" to "Remove from Radarr"),
+                onSelect = { viewModel.update { copy(deleteOption = it) } }
             )
             FormSpacer()
 
-            SwitchRow("Keep pilot episode (S1E1) permanently", uiState.keepPilot) {
-                viewModel.update { copy(keepPilot = it) }
+            SwitchRow("Require approval before deleting", uiState.requireApproval) {
+                viewModel.update { copy(requireApproval = it) }
             }
-            SwitchRow("Release keep on season finale", uiState.releaseKeepOnFinale) {
-                viewModel.update { copy(releaseKeepOnFinale = it) }
-            }
-            SwitchRow("Unmonitor on series ended", uiState.unmonitorOnSeriesEnded) {
-                viewModel.update { copy(unmonitorOnSeriesEnded = it) }
-            }
-            FormSpacer()
-
-            OutlinedTextField(
-                value = uiState.alwaysHave,
-                onValueChange = { viewModel.update { copy(alwaysHave = it) } },
-                label = { Text("Always have (e.g. s1, s*e1+)") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-            FormSpacer()
-
             SwitchRow("Dry run (log only, don't delete)", uiState.dryRun) {
                 viewModel.update { copy(dryRun = it) }
             }
@@ -209,8 +154,8 @@ fun RuleEditScreen(
     if (showDeleteConfirm) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = false },
-            title = { Text("Delete rule?") },
-            text = { Text("This removes '${uiState.ruleName}' and cleans up its Sonarr tag. This can't be undone.") },
+            title = { Text("Delete movie rule?") },
+            text = { Text("This removes '${uiState.ruleName}' and its Radarr tag from all movies. This can't be undone.") },
             confirmButton = {
                 TextButton(onClick = {
                     showDeleteConfirm = false

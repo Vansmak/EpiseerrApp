@@ -8,6 +8,7 @@ import com.episeerr.app.data.model.GlobalSettings
 import com.episeerr.app.data.model.GlobalSettingsResponse
 import com.episeerr.app.data.model.MovieRuleRequest
 import com.episeerr.app.data.model.MovieRuleResponse
+import com.episeerr.app.data.model.MovieRulesListResponse
 import com.episeerr.app.data.model.RuleRequest
 import com.episeerr.app.data.model.RuleResponse
 import com.episeerr.app.data.model.RulesListResponse
@@ -40,6 +41,8 @@ class EpiseerrRepository @Inject constructor(
         apiCall { api.updateRule(name, body) }
 
     suspend fun deleteRule(name: String): ApiResult<DeleteResponse> = apiCall { api.deleteRule(name) }
+
+    suspend fun getMovieRulesList(): ApiResult<MovieRulesListResponse> = apiCall { api.getMovieRulesList() }
 
     suspend fun getMovieRule(name: String): ApiResult<MovieRuleResponse> = apiCall { api.getMovieRule(name) }
 

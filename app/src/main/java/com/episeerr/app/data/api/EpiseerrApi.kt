@@ -7,6 +7,7 @@ import com.episeerr.app.data.model.GlobalSettings
 import com.episeerr.app.data.model.GlobalSettingsResponse
 import com.episeerr.app.data.model.MovieRuleRequest
 import com.episeerr.app.data.model.MovieRuleResponse
+import com.episeerr.app.data.model.MovieRulesListResponse
 import com.episeerr.app.data.model.RuleRequest
 import com.episeerr.app.data.model.RuleResponse
 import com.episeerr.app.data.model.RulesListResponse
@@ -52,6 +53,9 @@ interface EpiseerrApi {
 
     @DELETE("/api/rules/{name}")
     suspend fun deleteRule(@Path("name") name: String): DeleteResponse
+
+    @GET("/api/movie-rules")
+    suspend fun getMovieRulesList(): MovieRulesListResponse
 
     @GET("/api/movie-rules/{name}")
     suspend fun getMovieRule(@Path("name") name: String): MovieRuleResponse

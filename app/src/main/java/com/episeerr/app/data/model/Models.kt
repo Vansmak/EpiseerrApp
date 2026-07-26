@@ -103,6 +103,22 @@ data class RuleRequest(
 // --- Movie rules ---
 
 @Serializable
+data class MovieRulesListResponse(
+    val success: Boolean = false,
+    val rules: List<MovieRuleSummary> = emptyList(),
+    @SerialName("total_count") val totalCount: Int? = null
+)
+
+@Serializable
+data class MovieRuleSummary(
+    val name: String,
+    @SerialName("display_name") val displayName: String? = null,
+    val description: String? = null,
+    @SerialName("movie_count") val movieCount: Int? = null,
+    @SerialName("is_default") val isDefault: Boolean = false
+)
+
+@Serializable
 data class MovieRuleResponse(
     val success: Boolean = false,
     val rule: MovieRule? = null,
