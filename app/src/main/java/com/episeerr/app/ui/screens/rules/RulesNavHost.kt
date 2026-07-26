@@ -14,8 +14,8 @@ private const val CREATE_ROUTE = "rules/create"
 private const val EDIT_ROUTE = "rules/edit/{ruleName}"
 private const val MOVIE_CREATE_ROUTE = "movie-rules/create"
 private const val MOVIE_EDIT_ROUTE = "movie-rules/edit/{ruleName}"
-private const val MOVIES_BROWSE_ROUTE = "movies/browse"
-private const val SERIES_BROWSE_ROUTE = "series/browse"
+private const val MOVIES_BROWSE_ROUTE = "movies/browse?ruleName={ruleName}"
+private const val SERIES_BROWSE_ROUTE = "series/browse?ruleName={ruleName}"
 
 @Composable
 fun RulesNavHost() {
@@ -28,33 +28,45 @@ fun RulesNavHost() {
                 onCreateRule = { navController.navigate(CREATE_ROUTE) },
                 onOpenMovieRule = { name -> navController.navigate("movie-rules/edit/$name") },
                 onCreateMovieRule = { navController.navigate(MOVIE_CREATE_ROUTE) },
-                onBrowseMovies = { navController.navigate(MOVIES_BROWSE_ROUTE) },
-                onBrowseSeries = { navController.navigate(SERIES_BROWSE_ROUTE) }
+                onBrowseMovies = { navController.navigate("movies/browse") },
+                onBrowseSeries = { navController.navigate("series/browse") }
             )
         }
-        composable(MOVIES_BROWSE_ROUTE) {
+        composable(
+            MOVIES_BROWSE_ROUTE,
+            arguments = listOf(navArgument("ruleName") { type = NavType.StringType; nullable = true })
+        ) {
             MoviesBrowserScreen(onBack = { navController.popBackStack() })
         }
-        composable(SERIES_BROWSE_ROUTE) {
+        composable(
+            SERIES_BROWSE_ROUTE,
+            arguments = listOf(navArgument("ruleName") { type = NavType.StringType; nullable = true })
+        ) {
             SeriesBrowserScreen(onBack = { navController.popBackStack() })
         }
         composable(CREATE_ROUTE) {
-            RuleEditScreen(onBack = { navController.popBackStack() })
+            RuleEditScreen(onBack = { navController.popBackStack() }, onManageSeries = {})
         }
         composable(
             EDIT_ROUTE,
             arguments = listOf(navArgument("ruleName") { type = NavType.StringType })
         ) {
-            RuleEditScreen(onBack = { navController.popBackStack() })
+            RuleEditScreen(
+                onBack = { navController.popBackStack() },
+                onManageSeries = { ruleName -> navController.navigate("series/browse?ruleName=$ruleName") }
+            )
         }
         composable(MOVIE_CREATE_ROUTE) {
-            MovieRuleEditScreen(onBack = { navController.popBackStack() })
+            MovieRuleEditScreen(onBack = { navController.popBackStack() }, onManageMovies = {})
         }
         composable(
             MOVIE_EDIT_ROUTE,
             arguments = listOf(navArgument("ruleName") { type = NavType.StringType })
         ) {
-            MovieRuleEditScreen(onBack = { navController.popBackStack() })
+            MovieRuleEditScreen(
+                onBack = { navController.popBackStack() },
+                onManageMovies = { ruleName -> navController.navigate("movies/browse?ruleName=$ruleName") }
+            )
         }
     }
 }

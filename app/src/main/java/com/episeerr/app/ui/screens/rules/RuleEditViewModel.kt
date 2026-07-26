@@ -34,6 +34,7 @@ data class RuleFormState(
     val alwaysHave: String = "",
     val dryRun: Boolean = false,
     val setAsDefault: Boolean = false,
+    val seriesCount: Int = 0,
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,
     val error: String? = null,
@@ -94,6 +95,7 @@ class RuleEditViewModel @Inject constructor(
         releaseKeepOnFinale = rule.releaseKeepOnFinale,
         unmonitorOnSeriesEnded = rule.unmonitorOnSeriesEnded,
         alwaysHave = rule.alwaysHave,
+        seriesCount = rule.seriesCount ?: 0,
         dryRun = rule.dryRun,
         setAsDefault = rule.isDefault
     )

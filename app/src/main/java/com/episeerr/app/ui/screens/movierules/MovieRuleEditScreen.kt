@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,7 +43,8 @@ import com.episeerr.app.ui.components.TwoChoiceRow
 @Composable
 fun MovieRuleEditScreen(
     viewModel: MovieRuleEditViewModel = hiltViewModel(),
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onManageMovies: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showDeleteConfirm by remember { mutableStateOf(false) }
@@ -94,6 +96,14 @@ fun MovieRuleEditScreen(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
+                FormSpacer()
+            } else {
+                OutlinedButton(
+                    onClick = { onManageMovies(uiState.ruleName) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Manage assigned movies (${uiState.movieCount})")
+                }
                 FormSpacer()
             }
 

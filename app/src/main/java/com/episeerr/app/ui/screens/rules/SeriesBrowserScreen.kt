@@ -22,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -53,7 +54,7 @@ fun SeriesBrowserScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Series") },
+                title = { Text(uiState.filterRuleName?.let { "Series in \"$it\"" } ?: "Series") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
@@ -70,6 +71,20 @@ fun SeriesBrowserScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth().padding(16.dp, 8.dp)
             )
+
+            if (uiState.filterRuleName != null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp, 0.dp, 16.dp, 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Show all series (to add more)", style = MaterialTheme.typography.bodyMedium)
+                    Switch(
+                        checked = uiState.showAllSeries,
+                        onCheckedChange = viewModel::onShowAllChange,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
 
             when {
                 uiState.isLoading -> Column(
@@ -90,7 +105,8 @@ fun SeriesBrowserScreen(
 
                 else -> {
                     val filtered = uiState.series.filter {
-                        uiState.searchQuery.isBlank() || it.title.contains(uiState.searchQuery, ignoreCase = true)
+                        (uiState.searchQuery.isBlank() || it.title.contains(uiState.searchQuery, ignoreCase = true)) &&
+                            (uiState.showAllSeries || it.assignedRule == uiState.filterRuleName)
                     }
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),

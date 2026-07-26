@@ -1,5 +1,6 @@
 package com.episeerr.app.ui.screens.movierules
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.episeerr.app.data.ApiResult
@@ -17,15 +18,22 @@ data class MoviesBrowserUiState(
     val movies: List<RadarrMovie> = emptyList(),
     val searchQuery: String = "",
     val error: String? = null,
-    val assigningMovieId: Int? = null
+    val assigningMovieId: Int? = null,
+    val filterRuleName: String? = null,
+    val showAllMovies: Boolean = false
 )
 
 @HiltViewModel
 class MoviesBrowserViewModel @Inject constructor(
-    private val repository: EpiseerrRepository
+    private val repository: EpiseerrRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MoviesBrowserUiState())
+    private val filterRuleName: String? = savedStateHandle.get<String>("ruleName")
+
+    private val _uiState = MutableStateFlow(
+        MoviesBrowserUiState(filterRuleName = filterRuleName, showAllMovies = filterRuleName == null)
+    )
     val uiState: StateFlow<MoviesBrowserUiState> = _uiState.asStateFlow()
 
     init {
@@ -47,6 +55,10 @@ class MoviesBrowserViewModel @Inject constructor(
 
     fun onSearchChange(query: String) {
         _uiState.value = _uiState.value.copy(searchQuery = query)
+    }
+
+    fun onShowAllChange(showAll: Boolean) {
+        _uiState.value = _uiState.value.copy(showAllMovies = showAll)
     }
 
     fun assign(movieId: Int, ruleName: String) {

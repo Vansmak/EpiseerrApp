@@ -1,5 +1,6 @@
 package com.episeerr.app.ui.screens.rules
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.episeerr.app.data.ApiResult
@@ -17,15 +18,22 @@ data class SeriesBrowserUiState(
     val series: List<SonarrSeries> = emptyList(),
     val searchQuery: String = "",
     val error: String? = null,
-    val assigningSeriesId: Int? = null
+    val assigningSeriesId: Int? = null,
+    val filterRuleName: String? = null,
+    val showAllSeries: Boolean = false
 )
 
 @HiltViewModel
 class SeriesBrowserViewModel @Inject constructor(
-    private val repository: EpiseerrRepository
+    private val repository: EpiseerrRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(SeriesBrowserUiState())
+    private val filterRuleName: String? = savedStateHandle.get<String>("ruleName")
+
+    private val _uiState = MutableStateFlow(
+        SeriesBrowserUiState(filterRuleName = filterRuleName, showAllSeries = filterRuleName == null)
+    )
     val uiState: StateFlow<SeriesBrowserUiState> = _uiState.asStateFlow()
 
     init {
@@ -47,6 +55,10 @@ class SeriesBrowserViewModel @Inject constructor(
 
     fun onSearchChange(query: String) {
         _uiState.value = _uiState.value.copy(searchQuery = query)
+    }
+
+    fun onShowAllChange(showAll: Boolean) {
+        _uiState.value = _uiState.value.copy(showAllSeries = showAll)
     }
 
     fun assign(seriesId: Int, ruleName: String) {

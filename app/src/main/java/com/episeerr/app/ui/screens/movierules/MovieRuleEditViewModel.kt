@@ -24,6 +24,7 @@ data class MovieRuleFormState(
     val dryRun: Boolean = false,
     val deleteOption: String = "file_only",
     val setAsDefault: Boolean = false,
+    val movieCount: Int = 0,
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,
     val error: String? = null,
@@ -75,7 +76,8 @@ class MovieRuleEditViewModel @Inject constructor(
         requireApproval = rule.requireApproval,
         dryRun = rule.dryRun,
         deleteOption = rule.deleteOption,
-        setAsDefault = rule.isDefault
+        setAsDefault = rule.isDefault,
+        movieCount = rule.movieCount ?: 0
     )
 
     fun update(transform: MovieRuleFormState.() -> MovieRuleFormState) {
