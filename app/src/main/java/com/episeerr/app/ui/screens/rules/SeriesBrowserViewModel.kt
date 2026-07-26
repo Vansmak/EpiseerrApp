@@ -26,7 +26,8 @@ data class SeriesBrowserUiState(
     val showAllSeries: Boolean = false,
     val selectMode: Boolean = false,
     val selectedIds: Set<Int> = emptySet(),
-    val isBulkAssigning: Boolean = false
+    val isBulkAssigning: Boolean = false,
+    val groupByRule: Boolean = false
 )
 
 @HiltViewModel
@@ -65,6 +66,10 @@ class SeriesBrowserViewModel @Inject constructor(
 
     fun onShowAllChange(showAll: Boolean) {
         _uiState.value = _uiState.value.copy(showAllSeries = showAll)
+    }
+
+    fun onGroupByRuleChange(groupByRule: Boolean) {
+        _uiState.value = _uiState.value.copy(groupByRule = groupByRule)
     }
 
     fun toggleSelectMode() {

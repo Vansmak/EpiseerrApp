@@ -124,6 +124,20 @@ fun MoviesBrowserScreen(
                 }
             }
 
+            if (uiState.showAllMovies && !uiState.selectMode) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp, 0.dp, 16.dp, 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Group by rule", style = MaterialTheme.typography.bodyMedium)
+                    Switch(
+                        checked = uiState.groupByRule,
+                        onCheckedChange = viewModel::onGroupByRuleChange,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
+
             when {
                 uiState.isLoading -> Column(
                     modifier = Modifier.fillMaxSize(),
@@ -146,45 +160,49 @@ fun MoviesBrowserScreen(
                         (uiState.searchQuery.isBlank() || it.title.contains(uiState.searchQuery, ignoreCase = true)) &&
                             (uiState.showAllMovies || it.assignedRule == uiState.filterRuleName)
                     }
+
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp, 0.dp, 16.dp, 16.dp)
                     ) {
-                        items(filtered) { movie ->
-                            val selected = movie.id in uiState.selectedIds
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 8.dp)
-                                    .clickable {
-                                        if (uiState.selectMode) {
-                                            viewModel.toggleSelected(movie.id)
-                                        } else {
-                                            pickerMovie = movie
-                                        }
-                                    }
-                            ) {
-                                Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                                    if (uiState.selectMode) {
-                                        Checkbox(checked = selected, onCheckedChange = { viewModel.toggleSelected(movie.id) })
-                                    }
-                                    AsyncImage(
-                                        model = movie.poster,
-                                        contentDescription = movie.title,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier.size(48.dp, 72.dp)
+                        if (uiState.groupByRule) {
+                            val grouped = filtered.groupBy { it.assignedRule ?: "Unassigned" }
+                            val orderedKeys = grouped.keys.sortedWith(
+                                compareBy({ it == "Unassigned" }, { it.lowercase() })
+                            )
+                            orderedKeys.forEach { key ->
+                                item(key = "header_$key") {
+                                    Text(
+                                        "$key (${grouped[key]?.size ?: 0})",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
                                     )
-                                    Column(modifier = Modifier.padding(start = 12.dp).fillMaxWidth()) {
-                                        Text(
-                                            "${movie.title}${movie.year?.let { " ($it)" } ?: ""}",
-                                            style = MaterialTheme.typography.titleMedium
-                                        )
-                                        Text(
-                                            movie.assignedRule ?: "Unassigned",
-                                            style = MaterialTheme.typography.bodySmall
-                                        )
-                                    }
                                 }
+                                items(grouped[key] ?: emptyList(), key = { it.id }) { movie ->
+                                    MovieRow(
+                                        movie = movie,
+                                        selected = movie.id in uiState.selectedIds,
+                                        selectMode = uiState.selectMode,
+                                        onClick = {
+                                            if (uiState.selectMode) viewModel.toggleSelected(movie.id)
+                                            else pickerMovie = movie
+                                        },
+                                        onCheckedChange = { viewModel.toggleSelected(movie.id) }
+                                    )
+                                }
+                            }
+                        } else {
+                            items(filtered, key = { it.id }) { movie ->
+                                MovieRow(
+                                    movie = movie,
+                                    selected = movie.id in uiState.selectedIds,
+                                    selectMode = uiState.selectMode,
+                                    onClick = {
+                                        if (uiState.selectMode) viewModel.toggleSelected(movie.id)
+                                        else pickerMovie = movie
+                                    },
+                                    onCheckedChange = { viewModel.toggleSelected(movie.id) }
+                                )
                             }
                         }
                     }
@@ -237,5 +255,40 @@ fun MoviesBrowserScreen(
             confirmButton = {},
             dismissButton = { TextButton(onClick = { showBulkPicker = false }) { Text("Cancel") } }
         )
+    }
+}
+
+@Composable
+private fun MovieRow(
+    movie: RadarrMovie,
+    selected: Boolean,
+    selectMode: Boolean,
+    onClick: () -> Unit,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp)
+            .clickable(onClick = onClick)
+    ) {
+        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            if (selectMode) {
+                Checkbox(checked = selected, onCheckedChange = onCheckedChange)
+            }
+            AsyncImage(
+                model = movie.poster,
+                contentDescription = movie.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(48.dp, 72.dp)
+            )
+            Column(modifier = Modifier.padding(start = 12.dp).fillMaxWidth()) {
+                Text(
+                    "${movie.title}${movie.year?.let { " ($it)" } ?: ""}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(movie.assignedRule ?: "Unassigned", style = MaterialTheme.typography.bodySmall)
+            }
+        }
     }
 }

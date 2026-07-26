@@ -124,6 +124,20 @@ fun SeriesBrowserScreen(
                 }
             }
 
+            if (uiState.showAllSeries && !uiState.selectMode) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp, 0.dp, 16.dp, 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Group by rule", style = MaterialTheme.typography.bodyMedium)
+                    Switch(
+                        checked = uiState.groupByRule,
+                        onCheckedChange = viewModel::onGroupByRuleChange,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
+
             when {
                 uiState.isLoading -> Column(
                     modifier = Modifier.fillMaxSize(),
@@ -146,45 +160,49 @@ fun SeriesBrowserScreen(
                         (uiState.searchQuery.isBlank() || it.title.contains(uiState.searchQuery, ignoreCase = true)) &&
                             (uiState.showAllSeries || it.assignedRule == uiState.filterRuleName)
                     }
+
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp, 0.dp, 16.dp, 16.dp)
                     ) {
-                        items(filtered) { series ->
-                            val selected = series.id in uiState.selectedIds
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 8.dp)
-                                    .clickable {
-                                        if (uiState.selectMode) {
-                                            viewModel.toggleSelected(series.id)
-                                        } else {
-                                            pickerSeries = series
-                                        }
-                                    }
-                            ) {
-                                Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                                    if (uiState.selectMode) {
-                                        Checkbox(checked = selected, onCheckedChange = { viewModel.toggleSelected(series.id) })
-                                    }
-                                    AsyncImage(
-                                        model = series.poster,
-                                        contentDescription = series.title,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier.size(48.dp, 72.dp)
+                        if (uiState.groupByRule) {
+                            val grouped = filtered.groupBy { it.assignedRule ?: "No rule assigned" }
+                            val orderedKeys = grouped.keys.sortedWith(
+                                compareBy({ it == "No rule assigned" }, { it.lowercase() })
+                            )
+                            orderedKeys.forEach { key ->
+                                item(key = "header_$key") {
+                                    Text(
+                                        "$key (${grouped[key]?.size ?: 0})",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
                                     )
-                                    Column(modifier = Modifier.padding(start = 12.dp).fillMaxWidth()) {
-                                        Text(
-                                            "${series.title}${series.year?.let { " ($it)" } ?: ""}",
-                                            style = MaterialTheme.typography.titleMedium
-                                        )
-                                        Text(
-                                            series.assignedRule ?: "No rule assigned",
-                                            style = MaterialTheme.typography.bodySmall
-                                        )
-                                    }
                                 }
+                                items(grouped[key] ?: emptyList(), key = { it.id }) { series ->
+                                    SeriesRow(
+                                        series = series,
+                                        selected = series.id in uiState.selectedIds,
+                                        selectMode = uiState.selectMode,
+                                        onClick = {
+                                            if (uiState.selectMode) viewModel.toggleSelected(series.id)
+                                            else pickerSeries = series
+                                        },
+                                        onCheckedChange = { viewModel.toggleSelected(series.id) }
+                                    )
+                                }
+                            }
+                        } else {
+                            items(filtered, key = { it.id }) { series ->
+                                SeriesRow(
+                                    series = series,
+                                    selected = series.id in uiState.selectedIds,
+                                    selectMode = uiState.selectMode,
+                                    onClick = {
+                                        if (uiState.selectMode) viewModel.toggleSelected(series.id)
+                                        else pickerSeries = series
+                                    },
+                                    onCheckedChange = { viewModel.toggleSelected(series.id) }
+                                )
                             }
                         }
                     }
@@ -229,5 +247,40 @@ fun SeriesBrowserScreen(
             confirmButton = {},
             dismissButton = { TextButton(onClick = { showBulkPicker = false }) { Text("Cancel") } }
         )
+    }
+}
+
+@Composable
+private fun SeriesRow(
+    series: SonarrSeries,
+    selected: Boolean,
+    selectMode: Boolean,
+    onClick: () -> Unit,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp)
+            .clickable(onClick = onClick)
+    ) {
+        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            if (selectMode) {
+                Checkbox(checked = selected, onCheckedChange = onCheckedChange)
+            }
+            AsyncImage(
+                model = series.poster,
+                contentDescription = series.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(48.dp, 72.dp)
+            )
+            Column(modifier = Modifier.padding(start = 12.dp).fillMaxWidth()) {
+                Text(
+                    "${series.title}${series.year?.let { " ($it)" } ?: ""}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(series.assignedRule ?: "No rule assigned", style = MaterialTheme.typography.bodySmall)
+            }
+        }
     }
 }
