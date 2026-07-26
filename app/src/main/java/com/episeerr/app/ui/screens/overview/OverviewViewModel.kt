@@ -23,7 +23,9 @@ data class OverviewServiceRow(
  * Integrations that exist in setup-schema but aren't part of Episeerr's actual
  * media-management purpose (personal/hobby add-ons bundled into a custom instance).
  */
-private val NON_CORE_SERVICE_KEYS = setOf("dispatcharr", "docker", "sonos", "spotify", "xadarr", "gameday", "game_day")
+private val NON_CORE_SERVICE_KEYS = setOf(
+    "dispatcharr", "docker", "sonos", "spotify", "xadarr", "gameday", "game_day", "events"
+)
 
 data class OverviewUiState(
     val isLoading: Boolean = true,

@@ -61,6 +61,7 @@ class ServiceConfigViewModel @Inject constructor(
                     val schema = result.data
                     val state = when (serviceKey) {
                         "sonarr" -> ServiceConfigUiState(
+                            isLoading = false,
                             serviceKey = serviceKey,
                             displayName = "Sonarr",
                             enabled = schema.sonarr?.enabled ?: false,
@@ -79,6 +80,7 @@ class ServiceConfigViewModel @Inject constructor(
                             )
                         )
                         "tmdb" -> ServiceConfigUiState(
+                            isLoading = false,
                             serviceKey = serviceKey,
                             displayName = "TMDB",
                             enabled = schema.tmdb?.enabled ?: false,
@@ -89,6 +91,7 @@ class ServiceConfigViewModel @Inject constructor(
                         else -> {
                             val integration = schema.integrations[serviceKey]
                             ServiceConfigUiState(
+                                isLoading = false,
                                 serviceKey = serviceKey,
                                 displayName = integration?.displayName ?: serviceKey,
                                 enabled = integration?.enabled ?: false,
