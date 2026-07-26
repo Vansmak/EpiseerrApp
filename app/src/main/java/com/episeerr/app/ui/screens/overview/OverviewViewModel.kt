@@ -19,6 +19,12 @@ data class OverviewServiceRow(
     val enabled: Boolean
 )
 
+/**
+ * Integrations that exist in setup-schema but aren't part of Episeerr's actual
+ * media-management purpose (personal/hobby add-ons bundled into a custom instance).
+ */
+private val NON_CORE_SERVICE_KEYS = setOf("dispatcharr", "docker", "sonos", "spotify", "xadarr", "gameday", "game_day")
+
 data class OverviewUiState(
     val isLoading: Boolean = true,
     val setupComplete: Boolean = false,
@@ -64,16 +70,18 @@ class OverviewViewModel @Inject constructor(
                                 enabled = schema.tmdb?.enabled ?: true
                             )
                         )
-                        schema.integrations.values.forEach { integration ->
-                            add(
-                                OverviewServiceRow(
-                                    integration.serviceName,
-                                    integration.displayName,
-                                    connected = integration.connected,
-                                    enabled = integration.enabled
+                        schema.integrations.values
+                            .filter { it.serviceName.lowercase() !in NON_CORE_SERVICE_KEYS }
+                            .forEach { integration ->
+                                add(
+                                    OverviewServiceRow(
+                                        integration.serviceName,
+                                        integration.displayName,
+                                        connected = integration.connected,
+                                        enabled = integration.enabled
+                                    )
                                 )
-                            )
-                        }
+                            }
                     }.sortedWith(compareBy({ !it.connected }, { it.displayName }))
 
                     _uiState.value = _uiState.value.copy(
