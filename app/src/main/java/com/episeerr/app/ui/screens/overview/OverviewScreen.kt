@@ -101,7 +101,7 @@ fun OverviewScreen(
                     )
                 }
                 items(uiState.services) { service ->
-                    ServiceRow(service, onClick = { if (service.configurable) onConfigureService(service.key) })
+                    ServiceRow(service, onClick = { onConfigureService(service.key) })
                 }
             }
         }
@@ -120,33 +120,24 @@ private fun ActivityRow(item: ActivityItem) {
 
 @Composable
 private fun ServiceRow(service: OverviewServiceRow, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp)
-            .let { if (service.configurable) it.clickable(onClick = onClick) else it }
-    ) {
+    Card(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).clickable(onClick = onClick)) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.fillMaxWidth(0.85f)) {
+            Column {
                 Text(service.displayName, style = MaterialTheme.typography.titleMedium)
-                if (!service.connected) {
-                    Text("Not configured", style = MaterialTheme.typography.bodySmall)
-                } else {
-                    if (service.configurable && !service.enabled) {
-                        Text("Disabled", style = MaterialTheme.typography.bodySmall)
-                    }
-                    service.statLines.forEach { line ->
-                        Text(line, style = MaterialTheme.typography.bodySmall)
-                    }
-                }
+                Text(
+                    when {
+                        !service.connected -> "Not configured"
+                        !service.enabled -> "Configured - disabled"
+                        else -> "Configured - running"
+                    },
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
-            if (service.configurable) {
-                Icon(Icons.Filled.ChevronRight, contentDescription = "Configure")
-            }
+            Icon(Icons.Filled.ChevronRight, contentDescription = "Configure")
         }
     }
 }
