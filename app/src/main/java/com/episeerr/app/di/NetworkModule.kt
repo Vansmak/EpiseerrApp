@@ -43,6 +43,10 @@ object NetworkModule {
         ignoreUnknownKeys = true
         encodeDefaults = true
         explicitNulls = false
+        // Older rules predate fields like unmonitor_on_series_ended, so the server can send
+        // an explicit `null` for a non-nullable Boolean/Int field - coerce to the declared
+        // default instead of throwing.
+        coerceInputValues = true
     }
 
     @Provides
