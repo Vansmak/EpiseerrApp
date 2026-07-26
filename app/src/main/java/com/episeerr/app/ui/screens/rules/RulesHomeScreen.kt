@@ -20,8 +20,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -59,22 +59,7 @@ fun RulesHomeScreen(
     val movieState by movieViewModel.uiState.collectAsState()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Rules") },
-                actions = {
-                    if (tab == 0) {
-                        IconButton(onClick = onBrowseSeries) {
-                            Icon(Icons.Filled.Tv, contentDescription = "Browse series")
-                        }
-                    } else {
-                        IconButton(onClick = onBrowseMovies) {
-                            Icon(Icons.Filled.Movie, contentDescription = "Browse movies")
-                        }
-                    }
-                }
-            )
-        },
+        topBar = { TopAppBar(title = { Text("Rules") }) },
         floatingActionButton = {
             FloatingActionButton(onClick = { if (tab == 0) onCreateRule() else onCreateMovieRule() }) {
                 Icon(Icons.Filled.Add, contentDescription = "Create rule")
@@ -85,6 +70,18 @@ fun RulesHomeScreen(
             TabRow(selectedTabIndex = tab) {
                 Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text("Episode") })
                 Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text("Movie") })
+            }
+
+            OutlinedButton(
+                onClick = { if (tab == 0) onBrowseSeries() else onBrowseMovies() },
+                modifier = Modifier.fillMaxWidth().padding(16.dp, 12.dp)
+            ) {
+                Icon(
+                    if (tab == 0) Icons.Filled.Tv else Icons.Filled.Movie,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(if (tab == 0) "Assign series to a rule" else "Assign movies to a rule")
             }
 
             when {
