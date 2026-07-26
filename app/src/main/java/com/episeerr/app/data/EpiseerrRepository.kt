@@ -1,6 +1,8 @@
 package com.episeerr.app.data
 
 import com.episeerr.app.data.api.EpiseerrApi
+import com.episeerr.app.data.model.ApplySelectionRuleRequest
+import com.episeerr.app.data.model.ApplySelectionRuleResult
 import com.episeerr.app.data.model.ApproveResult
 import com.episeerr.app.data.model.AssignMovieRuleRequest
 import com.episeerr.app.data.model.AssignMovieRuleResponse
@@ -13,10 +15,12 @@ import com.episeerr.app.data.model.EpisodeIdsRequest
 import com.episeerr.app.data.model.LogsResponse
 import com.episeerr.app.data.model.MovieIdsRequest
 import com.episeerr.app.data.model.PendingDeletionsResponse
+import com.episeerr.app.data.model.PendingRequestsResponse
 import com.episeerr.app.data.model.PendingWatchEventsResponse
 import com.episeerr.app.data.model.ProcessWatchEventResult
 import com.episeerr.app.data.model.RadarrMoviesResponse
 import com.episeerr.app.data.model.RejectResult
+import com.episeerr.app.data.model.SaveServiceResponse
 import com.episeerr.app.data.model.SeriesListResponse
 import com.episeerr.app.data.model.SimpleSuccessResponse
 import com.episeerr.app.data.model.GlobalSettings
@@ -27,7 +31,6 @@ import com.episeerr.app.data.model.MovieRulesListResponse
 import com.episeerr.app.data.model.RuleRequest
 import com.episeerr.app.data.model.RuleResponse
 import com.episeerr.app.data.model.RulesListResponse
-import com.episeerr.app.data.model.SaveServiceResponse
 import com.episeerr.app.data.model.SetupSchemaResponse
 import com.episeerr.app.data.model.ToggleServiceRequest
 import com.episeerr.app.data.model.ToggleServiceResponse
@@ -126,4 +129,13 @@ class EpiseerrRepository @Inject constructor(
 
     suspend fun clearAllPendingWatchEvents(): ApiResult<SimpleSuccessResponse> =
         apiCall { api.clearAllPendingWatchEvents() }
+
+    suspend fun getPendingRequests(): ApiResult<PendingRequestsResponse> =
+        apiCall { api.getPendingRequests() }
+
+    suspend fun applyRuleToSelection(tmdbId: String, ruleName: String): ApiResult<ApplySelectionRuleResult> =
+        apiCall { api.applyRuleToSelection(ApplySelectionRuleRequest(tmdbId, ruleName)) }
+
+    suspend fun deletePendingRequest(requestId: String): ApiResult<SaveServiceResponse> =
+        apiCall { api.deletePendingRequest(requestId) }
 }

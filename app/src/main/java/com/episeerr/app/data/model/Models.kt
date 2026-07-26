@@ -414,6 +414,39 @@ data class ProcessWatchEventResult(
     val error: String? = null
 )
 
+// --- Pending selections (episeerr_select tag / watchlist requests awaiting a rule) ---
+
+@Serializable
+data class PendingRequestsResponse(
+    val success: Boolean = false,
+    val requests: List<PendingRequestItem> = emptyList(),
+    val count: Int = 0,
+    val error: String? = null
+)
+
+@Serializable
+data class PendingRequestItem(
+    val id: String,
+    val title: String = "",
+    @SerialName("needs_season_selection") val needsSeasonSelection: Boolean = false,
+    @SerialName("tmdb_id") val tmdbId: JsonElement? = null,
+    val source: String = "",
+    @SerialName("source_name") val sourceName: String? = null
+)
+
+@Serializable
+data class ApplySelectionRuleRequest(
+    @SerialName("tmdb_id") val tmdbId: String,
+    @SerialName("rule_name") val ruleName: String
+)
+
+@Serializable
+data class ApplySelectionRuleResult(
+    val success: Boolean = false,
+    val message: String? = null,
+    val error: String? = null
+)
+
 // --- Logs ---
 
 @Serializable

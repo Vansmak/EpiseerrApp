@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -31,12 +32,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.episeerr.app.data.model.PendingRequestItem
 import com.episeerr.app.data.model.PendingWatchEventItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -89,6 +92,7 @@ fun PendingScreen(viewModel: PendingViewModel = hiltViewModel()) {
             TabRow(selectedTabIndex = tab) {
                 Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text("Deletions") })
                 Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text("Watch Events") })
+                Tab(selected = tab == 2, onClick = { tab = 2 }, text = { Text("Selections") })
             }
 
             when {
@@ -109,7 +113,8 @@ fun PendingScreen(viewModel: PendingViewModel = hiltViewModel()) {
                 }
 
                 tab == 0 -> DeletionsTab(uiState, viewModel)
-                else -> WatchEventsTab(uiState, viewModel)
+                tab == 1 -> WatchEventsTab(uiState, viewModel)
+                else -> SelectionsTab(uiState, viewModel)
             }
         }
     }
@@ -228,5 +233,61 @@ private fun WatchEventRow(
                 TextButton(onClick = { onClear(item.id) }, enabled = !isActing) { Text("Clear") }
             }
         }
+    }
+}
+
+@Composable
+private fun SelectionsTab(uiState: PendingUiState, viewModel: PendingViewModel) {
+    var pickerItem by remember { mutableStateOf<PendingRequestItem?>(null) }
+
+    if (uiState.selectionRequests.isEmpty()) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) { Text("No shows awaiting a rule.", style = MaterialTheme.typography.bodyMedium) }
+        return
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp, 8.dp, 16.dp, 16.dp)
+    ) {
+        items(uiState.selectionRequests, key = { it.id }) { item ->
+            Card(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text(item.title, style = MaterialTheme.typography.titleMedium)
+                    Text(item.sourceName ?: item.source, style = MaterialTheme.typography.bodySmall)
+                    Row(modifier = Modifier.padding(top = 8.dp)) {
+                        TextButton(onClick = { pickerItem = item }, enabled = !uiState.isActing) {
+                            Text("Assign Rule")
+                        }
+                        TextButton(
+                            onClick = { viewModel.dismissSelection(item.id) },
+                            enabled = !uiState.isActing
+                        ) { Text("Dismiss") }
+                    }
+                }
+            }
+        }
+    }
+
+    pickerItem?.let { item ->
+        AlertDialog(
+            onDismissRequest = { pickerItem = null },
+            title = { Text("Assign rule to \"${item.title}\"") },
+            text = {
+                Column {
+                    uiState.availableRules.forEach { rule ->
+                        TextButton(onClick = {
+                            viewModel.applyRuleToSelection(item.tmdbIdString(), rule.name)
+                            pickerItem = null
+                        }) { Text(rule.displayName ?: rule.name) }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = { TextButton(onClick = { pickerItem = null }) { Text("Cancel") } }
+        )
     }
 }

@@ -1,5 +1,7 @@
 package com.episeerr.app.data.api
 
+import com.episeerr.app.data.model.ApplySelectionRuleRequest
+import com.episeerr.app.data.model.ApplySelectionRuleResult
 import com.episeerr.app.data.model.AssignMovieRuleRequest
 import com.episeerr.app.data.model.AssignMovieRuleResponse
 import com.episeerr.app.data.model.AssignSeriesRuleRequest
@@ -12,6 +14,7 @@ import com.episeerr.app.data.model.EpisodeIdsRequest
 import com.episeerr.app.data.model.LogsResponse
 import com.episeerr.app.data.model.MovieIdsRequest
 import com.episeerr.app.data.model.PendingDeletionsResponse
+import com.episeerr.app.data.model.PendingRequestsResponse
 import com.episeerr.app.data.model.PendingWatchEventsResponse
 import com.episeerr.app.data.model.ProcessWatchEventResult
 import com.episeerr.app.data.model.RadarrMoviesResponse
@@ -151,4 +154,13 @@ interface EpiseerrApi {
 
     @POST("/api/pending-watch-events/clear-all")
     suspend fun clearAllPendingWatchEvents(): SimpleSuccessResponse
+
+    @GET("/api/pending-requests")
+    suspend fun getPendingRequests(): PendingRequestsResponse
+
+    @POST("/api/pending-requests/apply-rule")
+    suspend fun applyRuleToSelection(@Body body: ApplySelectionRuleRequest): ApplySelectionRuleResult
+
+    @POST("/api/delete-request/{requestId}")
+    suspend fun deletePendingRequest(@Path("requestId") requestId: String): SaveServiceResponse
 }
