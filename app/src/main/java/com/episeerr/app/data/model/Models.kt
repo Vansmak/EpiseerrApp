@@ -279,7 +279,26 @@ data class IntegrationSetupInfo(
     @SerialName("display_name") val displayName: String,
     val connected: Boolean = false,
     val enabled: Boolean = false,
-    val apikey: String? = null
+    val apikey: String? = null,
+    @SerialName("setup_fields") val setupFields: List<SetupField> = emptyList(),
+    @SerialName("saved_values") val savedValues: Map<String, JsonElement> = emptyMap()
+)
+
+@Serializable
+data class SetupField(
+    val name: String,
+    val label: String? = null,
+    val type: String = "text",
+    val placeholder: String? = null,
+    val required: Boolean = false,
+    val help: String? = null,
+    @SerialName("help_text") val helpText: String? = null
+)
+
+@Serializable
+data class SaveServiceResponse(
+    val status: String = "",
+    val message: String = ""
 )
 
 @Serializable

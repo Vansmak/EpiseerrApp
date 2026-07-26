@@ -17,9 +17,11 @@ import com.episeerr.app.data.model.MovieRulesListResponse
 import com.episeerr.app.data.model.RuleRequest
 import com.episeerr.app.data.model.RuleResponse
 import com.episeerr.app.data.model.RulesListResponse
+import com.episeerr.app.data.model.SaveServiceResponse
 import com.episeerr.app.data.model.SetupSchemaResponse
 import com.episeerr.app.data.model.ToggleServiceRequest
 import com.episeerr.app.data.model.ToggleServiceResponse
+import kotlinx.serialization.json.JsonObject
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -92,6 +94,12 @@ interface EpiseerrApi {
 
     @POST("/api/toggle-service/{service}")
     suspend fun toggleService(@Path("service") service: String, @Body body: ToggleServiceRequest): ToggleServiceResponse
+
+    @POST("/api/save-service/{service}")
+    suspend fun saveService(@Path("service") service: String, @Body body: JsonObject): SaveServiceResponse
+
+    @POST("/api/test-connection/{service}")
+    suspend fun testConnection(@Path("service") service: String, @Body body: JsonObject): SaveServiceResponse
 
     @GET("/api/global-settings")
     suspend fun getGlobalSettings(): GlobalSettingsResponse

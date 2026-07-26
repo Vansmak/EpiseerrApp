@@ -5,7 +5,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -20,19 +19,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.episeerr.app.ui.screens.dashboard.DashboardScreen
+import com.episeerr.app.ui.screens.overview.OverviewNavHost
 import com.episeerr.app.ui.screens.rules.RulesNavHost
-import com.episeerr.app.ui.screens.services.ServicesScreen
 import com.episeerr.app.ui.screens.settings.GlobalSettingsScreen
 
 private sealed class MainTab(val route: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    object Dashboard : MainTab("main/dashboard", "Dashboard", Icons.Filled.Dashboard)
+    object Overview : MainTab("main/overview", "Overview", Icons.Filled.Dashboard)
     object Rules : MainTab("main/rules", "Rules", Icons.Filled.List)
-    object Services : MainTab("main/services", "Services", Icons.Filled.Extension)
     object Settings : MainTab("main/settings", "Settings", Icons.Filled.Settings)
 }
 
-private val mainTabs = listOf(MainTab.Dashboard, MainTab.Rules, MainTab.Services, MainTab.Settings)
+private val mainTabs = listOf(MainTab.Overview, MainTab.Rules, MainTab.Settings)
 
 @Composable
 fun MainScaffold() {
@@ -65,12 +62,11 @@ fun MainScaffold() {
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = MainTab.Dashboard.route,
+            startDestination = MainTab.Overview.route,
             modifier = androidx.compose.ui.Modifier.padding(padding)
         ) {
-            composable(MainTab.Dashboard.route) { DashboardScreen() }
+            composable(MainTab.Overview.route) { OverviewNavHost() }
             composable(MainTab.Rules.route) { RulesNavHost() }
-            composable(MainTab.Services.route) { ServicesScreen() }
             composable(MainTab.Settings.route) { GlobalSettingsScreen() }
         }
     }

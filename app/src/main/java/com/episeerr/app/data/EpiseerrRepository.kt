@@ -18,9 +18,11 @@ import com.episeerr.app.data.model.MovieRulesListResponse
 import com.episeerr.app.data.model.RuleRequest
 import com.episeerr.app.data.model.RuleResponse
 import com.episeerr.app.data.model.RulesListResponse
+import com.episeerr.app.data.model.SaveServiceResponse
 import com.episeerr.app.data.model.SetupSchemaResponse
 import com.episeerr.app.data.model.ToggleServiceRequest
 import com.episeerr.app.data.model.ToggleServiceResponse
+import kotlinx.serialization.json.JsonObject
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -74,6 +76,12 @@ class EpiseerrRepository @Inject constructor(
 
     suspend fun toggleService(service: String, enabled: Boolean): ApiResult<ToggleServiceResponse> =
         apiCall { api.toggleService(service, ToggleServiceRequest(enabled)) }
+
+    suspend fun saveService(service: String, fields: JsonObject): ApiResult<SaveServiceResponse> =
+        apiCall { api.saveService(service, fields) }
+
+    suspend fun testConnection(service: String, fields: JsonObject): ApiResult<SaveServiceResponse> =
+        apiCall { api.testConnection(service, fields) }
 
     suspend fun getGlobalSettings(): ApiResult<GlobalSettingsResponse> = apiCall { api.getGlobalSettings() }
 
