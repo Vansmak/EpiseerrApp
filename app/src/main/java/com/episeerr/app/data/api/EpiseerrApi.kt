@@ -108,6 +108,9 @@ interface EpiseerrApi {
     @POST("/api/toggle-service/{service}")
     suspend fun toggleService(@Path("service") service: String, @Body body: ToggleServiceRequest): ToggleServiceResponse
 
+    @POST("/api/delete-service/{service}")
+    suspend fun deleteService(@Path("service") service: String): SaveServiceResponse
+
     @POST("/api/save-service/{service}")
     suspend fun saveService(@Path("service") service: String, @Body body: JsonObject): SaveServiceResponse
 

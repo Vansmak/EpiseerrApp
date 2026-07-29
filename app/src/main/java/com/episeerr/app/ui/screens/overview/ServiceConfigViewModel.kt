@@ -33,9 +33,11 @@ data class ServiceConfigUiState(
     val values: Map<String, String> = emptyMap(),
     val isSaving: Boolean = false,
     val isTesting: Boolean = false,
+    val isDeleting: Boolean = false,
     val testResult: String? = null,
     val error: String? = null,
-    val saved: Boolean = false
+    val saved: Boolean = false,
+    val deleted: Boolean = false
 )
 
 @HiltViewModel
@@ -132,6 +134,22 @@ class ServiceConfigViewModel @Inject constructor(
             when (repository.toggleService(serviceKey, enabled)) {
                 is ApiResult.Error -> _uiState.value = _uiState.value.copy(enabled = previous)
                 else -> {}
+            }
+        }
+    }
+
+    fun deleteService() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isDeleting = true, error = null)
+            when (val result = repository.deleteService(_uiState.value.serviceKey)) {
+                is ApiResult.Success -> {
+                    if (result.data.status == "success") {
+                        _uiState.value = _uiState.value.copy(isDeleting = false, deleted = true)
+                    } else {
+                        _uiState.value = _uiState.value.copy(isDeleting = false, error = result.data.message)
+                    }
+                }
+                is ApiResult.Error -> _uiState.value = _uiState.value.copy(isDeleting = false, error = result.message)
             }
         }
     }

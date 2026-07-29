@@ -89,6 +89,9 @@ class EpiseerrRepository @Inject constructor(
     suspend fun toggleService(service: String, enabled: Boolean): ApiResult<ToggleServiceResponse> =
         apiCall { api.toggleService(service, ToggleServiceRequest(enabled)) }
 
+    suspend fun deleteService(service: String): ApiResult<SaveServiceResponse> =
+        apiCall { api.deleteService(service) }
+
     suspend fun saveService(service: String, fields: JsonObject): ApiResult<SaveServiceResponse> =
         apiCall { api.saveService(service, fields) }
 
